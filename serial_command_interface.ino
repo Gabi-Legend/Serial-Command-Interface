@@ -18,4 +18,26 @@ void setup() {
 }
 
 void loop() {
+  readSerial();            
+
+  if (cmdReady) {           
+    Serial.print("Command received: ");
+    Serial.println(cmdBuffer);
+    cmdIndex = 0;
+    cmdReady = false;
+  }
+}
+
+void readSerial(){
+  while(Serial.available()){
+    char c = Serial.read();
+    if(c == '\n' || c == '\r'){
+      cmdBuffer[cmdIndex] = '\0';
+      cmdReady = true;
+      return;
+    }
+    if (cmdIndex < sizeof(cmdBuffer) - 1) { 
+      cmdBuffer[cmdIndex++] = c;
+    }
+  }
 }
