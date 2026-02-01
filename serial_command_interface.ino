@@ -20,9 +20,8 @@ void setup() {
 void loop() {
   readSerial();            
 
-  if (cmdReady) {           
-    Serial.print("Command received: ");
-    Serial.println(cmdBuffer);
+  if (cmdReady) {
+    processCommand(cmdBuffer);
     cmdIndex = 0;
     cmdReady = false;
   }
@@ -39,5 +38,25 @@ void readSerial(){
     if (cmdIndex < sizeof(cmdBuffer) - 1) { 
       cmdBuffer[cmdIndex++] = c;
     }
+  }
+}
+
+void processCommand(const char* cmd){
+  if(strcmp(cmd, "help")==0){
+    Serial.println("Commands: help, uptime, status, reset");
+  }  else if (strcmp(cmd, "uptime") == 0) {
+    unsigned long now = millis();
+    Serial.print("Uptime (ms): ");
+    Serial.println(now - sys.startTime);
+  } 
+  else if (strcmp(cmd, "status") == 0) {
+    Serial.println("System OK");
+  } 
+  else if (strcmp(cmd, "reset") == 0) {
+    Serial.println("Resetting...");
+    asm volatile ("jmp 0");  // reset software
+  } 
+  else {
+    Serial.println("Unknown command");
   }
 }
